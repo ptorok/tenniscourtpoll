@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tennis Season Poll</title>
+<title>Tenisz Szezon Szavazás</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -261,7 +261,7 @@ tfoot .cap  { font-size: .75rem; opacity: .65; font-weight: 400; }
 const CONFIG = {
 
   /* Season info */
-  seasonLabel:      "Summer 2026 Outdoor Season",
+  seasonLabel:      "2026 Nyári szezon",
   totalSeasonWeeks: 25,   // total weeks the season spans
 
   /* Courts — rename freely */
@@ -300,25 +300,24 @@ const CONFIG = {
 <!-- Setup overlay -->
 <div id="setup-overlay" style="display:none">
   <div class="setup-box">
-    <h2>Backend setup</h2>
+    <h2>Backend beállítás</h2>
     <p class="setup-intro">
-      This poll stores responses in a free
-      <a href="https://jsonbin.io" target="_blank">JSONBin.io</a> bin so all
-      players write to the same place.<br><br>
-      Sign up at jsonbin.io → create a new bin containing just <code>{}</code>
-      → paste your Bin ID and Master Key below.
+      Ez a szavazás egy ingyenes
+      <a href="https://jsonbin.io" target="_blank">JSONBin.io</a> tárolóban őrzi a válaszokat, így mindenki ugyanoda ír.<br><br>
+      Regisztrálj a jsonbin.io oldalon → hozz létre egy új bint <code>{}</code> tartalommal
+      → illeszd be a Bin azonosítót és a Master kulcsot alul.
     </p>
-    <label class="setup-field-label">Bin ID</label>
-    <p class="setup-field-hint">From the bin URL or the bin info panel</p>
+    <label class="setup-field-label">Bin azonosító</label>
+    <p class="setup-field-hint">A bin URL-jéből vagy az info panelből</p>
     <input type="text" id="setup-bin-id" placeholder="6643f1e1acd3cb34a836f123" autocomplete="off">
-    <label class="setup-field-label">Master API Key</label>
-    <p class="setup-field-hint">From Account → API Keys</p>
+    <label class="setup-field-label">Master API kulcs</label>
+    <p class="setup-field-hint">Fiókból → API kulcsok</p>
     <input type="text" id="setup-api-key" placeholder="$2a$10$..." autocomplete="off">
-    <button class="setup-save-btn" onclick="saveSetup()">Save &amp; open poll</button>
+    <button class="setup-save-btn" onclick="saveSetup()">Mentés és szavazás megnyitása</button>
     <p class="setup-footer">
-      These credentials are saved only in <em>your</em> browser's localStorage —
-      never transmitted anywhere except directly to JSONBin.
-      To hard-code them instead, edit the CONFIG block at the top of this HTML file.
+      Ezek az adatok csak a <em>te</em> böngésződ localStorage-ában tárolódnak —
+      sehova máshova nem kerülnek, csak közvetlenül a JSONBin-hez.
+      Ha inkább bekódolnád, szerkeszd a CONFIG blokkot a HTML fájl tetején.
     </p>
   </div>
 </div>
@@ -330,15 +329,15 @@ const CONFIG = {
   <div class="header">
     <div class="header-inner">
       <div class="header-eyebrow" id="hdr-eyebrow">🎾</div>
-      <h1>Game Preference Poll</h1>
+      <h1>Beosztás preferencia szavazás</h1>
       <p class="header-sub" id="hdr-sub"></p>
     </div>
   </div>
 
   <div class="tabs">
-    <button class="tab-btn active" id="tab-form-btn"    onclick="showTab('form')">My Preferences</button>
+    <button class="tab-btn active" id="tab-form-btn"    onclick="showTab('form')">Preferenciáim</button>
     <button class="tab-btn"        id="tab-results-btn" onclick="showTab('results')">
-      Results <span class="badge" id="resp-badge" style="display:none">0</span>
+      Eredmények <span class="badge" id="resp-badge" style="display:none">0</span>
     </button>
   </div>
 
@@ -348,43 +347,43 @@ const CONFIG = {
     <div id="tab-form">
 
       <div class="card">
-        <div class="field-label">Your name</div>
-        <div class="field-hint">Select your name from the list</div>
+        <div class="field-label">A neved</div>
+        <div class="field-hint">Válaszd ki a neved a listából</div>
         <select id="f-name">
-          <option value="">— choose your name —</option>
+          <option value="">— válaszd ki a neved —</option>
         </select>
       </div>
 
       <div class="card">
-        <div class="field-label">Weeks away or unavailable</div>
+        <div class="field-label">Hiányzó vagy elfoglalt hetek</div>
         <div class="field-hint">
-          How many whole weeks will you definitely not be able to play?
-          (holidays, travel, injury…) Your game totals will be reduced accordingly.
+          Hány teljes héten biztos, hogy nem tudsz játszani?
+          (nyaralás, utazás, sérülés…) A részvételeid száma ennek megfelelően csökken.
         </div>
         <div class="weeks-row">
           <input type="number" id="f-weeks-off" value="0" min="0" max="52" oninput="recalc()">
-          <span class="weeks-note" id="weeks-label">weeks off</span>
+          <span class="weeks-note" id="weeks-label">kimaradó hét</span>
         </div>
       </div>
 
       <div class="card">
-        <div class="field-label">Playing frequency per court</div>
+        <div class="field-label">Játékgyakoriság pályánként</div>
         <div class="field-hint">
-          For each court, how often do you expect to play there during weeks when you are available?
-          Set each independently — you can attend both, just one, or any mix.
+          Minden pályánál add meg, milyen sűrűn tervezel oda járni az elérhető heteid alatt.
+          Mindent függetlenül állíts be — mindkettőre, csak egyikre, vagy bármilyen arányban.
         </div>
         <div class="court-grid">
           <div class="court-card">
             <h3 id="court-a-name">Court A</h3>
             <div class="court-meta" id="court-a-meta"></div>
             <select id="f-freq-a" onchange="recalc()">
-              <option value="">— frequency —</option>
-              <option value="1.00">Every week (nearly always)</option>
-              <option value="0.75">Most weeks — about 3 in 4</option>
-              <option value="0.50">Every other week</option>
-              <option value="0.33">About 1 in 3 weeks</option>
-              <option value="0.25">Occasional — about 1 in 4</option>
-              <option value="0.00">Never / not attending</option>
+              <option value="">— gyakoriság —</option>
+              <option value="1.00">Minden héten (szinte mindig)</option>
+              <option value="0.75">A legtöbb héten — kb. 4-ből 3</option>
+              <option value="0.50">Minden második héten</option>
+              <option value="0.33">Kb. 3-ból 1 héten</option>
+              <option value="0.25">Alkalmanként — kb. 4-ből 1</option>
+              <option value="0.00">Soha / nem veszek részt</option>
             </select>
             <div class="court-preview" id="preview-a"></div>
           </div>
@@ -392,13 +391,13 @@ const CONFIG = {
             <h3 id="court-b-name">Court B</h3>
             <div class="court-meta" id="court-b-meta"></div>
             <select id="f-freq-b" onchange="recalc()">
-              <option value="">— frequency —</option>
-              <option value="1.00">Every week (nearly always)</option>
-              <option value="0.75">Most weeks — about 3 in 4</option>
-              <option value="0.50">Every other week</option>
-              <option value="0.33">About 1 in 3 weeks</option>
-              <option value="0.25">Occasional — about 1 in 4</option>
-              <option value="0.00">Never / not attending</option>
+              <option value="">— gyakoriság —</option>
+              <option value="1.00">Minden héten (szinte mindig)</option>
+              <option value="0.75">A legtöbb héten — kb. 4-ből 3</option>
+              <option value="0.50">Minden második héten</option>
+              <option value="0.33">Kb. 3-ból 1 héten</option>
+              <option value="0.25">Alkalmanként — kb. 4-ből 1</option>
+              <option value="0.00">Soha / nem veszek részt</option>
             </select>
             <div class="court-preview" id="preview-b"></div>
           </div>
@@ -406,12 +405,12 @@ const CONFIG = {
       </div>
 
       <div class="card">
-        <div class="field-label">Additional notes</div>
-        <div class="field-hint">Optional — e.g. "prefer not to play Mondays", "flexible on location"</div>
-        <textarea id="f-notes" placeholder="Leave blank if nothing to add…"></textarea>
+        <div class="field-label">Megjegyzések</div>
+        <div class="field-hint">Opcionális — pl. „kedden nem érek rá”, „rugalmas vagyok a helyszínnel”</div>
+        <textarea id="f-notes" placeholder="Hagyd üresén, ha nincs megjegyzésed…"></textarea>
       </div>
 
-      <button class="submit-btn" id="submit-btn" onclick="handleSubmit()">Submit my preferences</button>
+      <button class="submit-btn" id="submit-btn" onclick="handleSubmit()">Preferenciáim beküldése</button>
       <div id="form-notice" style="display:none" class="notice"></div>
 
     </div>
@@ -419,13 +418,13 @@ const CONFIG = {
     <!-- RESULTS TAB -->
     <div id="tab-results" style="display:none">
       <div class="results-header">
-        <h2>All Responses</h2>
+        <h2>Összes válasz</h2>
         <div class="btn-row">
-          <button class="icon-btn btn-export" onclick="exportCSV()">⬇ Export CSV</button>
-          <button class="icon-btn btn-clear"  onclick="clearAll()">✕ Clear all</button>
+          <button class="icon-btn btn-export" onclick="exportCSV()">⬇ CSV exportálás</button>
+          <button class="icon-btn btn-clear"  onclick="clearAll()">✕ Mindent töröl</button>
         </div>
       </div>
-      <div id="results-body"><p class="state-msg">Loading…</p></div>
+      <div id="results-body"><p class="state-msg">Betöltés…</p></div>
     </div>
 
   </div>
@@ -435,12 +434,12 @@ const CONFIG = {
 <script>
 /* ── Constants ────────────────────────────────────────────── */
 const ATTENDANCE_LABELS = {
-  "1.00": "Every week",
-  "0.75": "Most weeks — about 3 in 4",
-  "0.50": "Every other week",
-  "0.33": "About 1 in 3 weeks",
-  "0.25": "Occasional — about 1 in 4",
-  "0.00": "Never / not attending",
+  "1.00": "Minden héten",
+  "0.75": "A legtöbb héten — kb. 4-ből 3",
+  "0.50": "Minden második héten",
+  "0.33": "Kb. 3-ból 1 héten",
+  "0.25": "Alkalmanként — kb. 4-ből 1",
+  "0.00": "Soha / nem veszek részt",
 };
 
 /* ── Calculation ──────────────────────────────────────────── */
@@ -456,17 +455,17 @@ function recalc() {
   const W        = CONFIG.totalSeasonWeeks;
 
   document.getElementById('weeks-label').textContent =
-    `week${weeksOff === 1 ? '' : 's'} off out of ${W}-week season`;
+    `kimaradó hét a ${W} hetes szezonból`;
 
   const pA = document.getElementById('preview-a');
   const pB = document.getElementById('preview-b');
 
   if (freqA !== '') {
-    pA.innerHTML = `≈ ${calcGames(CONFIG.courts.A.games, W, weeksOff, parseFloat(freqA))} games <small>for you</small>`;
+    pA.innerHTML = `≈ ${calcGames(CONFIG.courts.A.games, W, weeksOff, parseFloat(freqA))} alkalom <small>neked</small>`;
   } else { pA.innerHTML = ''; }
 
   if (freqB !== '') {
-    pB.innerHTML = `≈ ${calcGames(CONFIG.courts.B.games, W, weeksOff, parseFloat(freqB))} games <small>for you</small>`;
+    pB.innerHTML = `≈ ${calcGames(CONFIG.courts.B.games, W, weeksOff, parseFloat(freqB))} alkalom <small>neked</small>`;
   } else { pB.innerHTML = ''; }
 }
 
@@ -511,15 +510,15 @@ async function handleSubmit() {
   const notes    = document.getElementById('f-notes').value.trim();
   const W        = CONFIG.totalSeasonWeeks;
 
-  if (!name)                   { alert('Please select your name.'); return; }
-  if (freqA === '' && freqB === '') { alert('Please set a frequency for at least one court.'); return; }
+  if (!name)                   { alert('Kérlek válaszd ki a neved.'); return; }
+  if (freqA === '' && freqB === '') { alert('Kérlek adj meg egy gyakoriságot legalább egy pályához.'); return; }
 
   const gA = freqA !== '' ? calcGames(CONFIG.courts.A.games, W, weeksOff, parseFloat(freqA)) : 0;
   const gB = freqB !== '' ? calcGames(CONFIG.courts.B.games, W, weeksOff, parseFloat(freqB)) : 0;
 
   const btn = document.getElementById('submit-btn');
   btn.disabled = true;
-  btn.textContent = 'Saving…';
+  btn.textContent = 'Mentés…';
   setNotice('', '');
 
   try {
@@ -543,17 +542,17 @@ async function handleSubmit() {
     btn.style.display = 'none';
 
     setNotice('success',
-      `<strong>Thank you ✓</strong>
-       Your preferences have been saved — you can close this page.<br><br>
-       Your estimates: <strong>${gA}</strong> games at ${esc(CONFIG.courts.A.name)}
-       &nbsp;·&nbsp; <strong>${gB}</strong> games at ${esc(CONFIG.courts.B.name)}`
+      `<strong>Köszönjük ✓</strong>
+       A preferenciáid elmentve — bezárhatod az oldalt.<br><br>
+       Becsült alkalomek: <strong>${gA}</strong> itt: ${esc(CONFIG.courts.A.name)}
+       &nbsp;·&nbsp; <strong>${gB}</strong> itt: ${esc(CONFIG.courts.B.name)}`
     );
     updateBadge(Object.keys(current).length);
 
   } catch (e) {
     btn.disabled = false;
-    btn.textContent = 'Submit my preferences';
-    setNotice('error', `<strong>Could not save</strong> — ${esc(e.message)}. Please try again or contact the coordinator.`);
+    btn.textContent = 'Preferenciáim beküldése';
+    setNotice('error', `<strong>Nem sikerült menteni</strong> — ${esc(e.message)}. Kérlek próbáld újra, vagy vedd fel a kapcsolatot a szervezővel.`);
   }
 }
 
@@ -567,11 +566,11 @@ function setNotice(type, html) {
 /* ── Results tab ──────────────────────────────────────────── */
 async function loadResults() {
   const body = document.getElementById('results-body');
-  body.innerHTML = '<p class="state-msg">Loading…</p>';
+  body.innerHTML = '<p class="state-msg">Betöltés…</p>';
   try {
     renderResults(await readBin());
   } catch (e) {
-    body.innerHTML = `<p class="state-msg" style="color:var(--red)">Could not load results: ${esc(e.message)}</p>`;
+    body.innerHTML = `<p class="state-msg" style="color:var(--red)">Az eredmények nem tölthetők be: ${esc(e.message)}</p>`;
   }
 }
 
@@ -581,7 +580,7 @@ function renderResults(data) {
   updateBadge(rows.length);
 
   if (!rows.length) {
-    body.innerHTML = '<p class="state-msg">No responses yet.</p>';
+    body.innerHTML = '<p class="state-msg">Még nincsenek válaszok.</p>';
     return;
   }
 
@@ -604,18 +603,18 @@ function renderResults(data) {
     <div class="table-wrap">
       <table>
         <thead><tr>
-          <th>Player</th>
-          <th>${esc(cA.name)}<br><span style="font-weight:300;font-size:.72rem;text-transform:none">${cA.games} total</span></th>
-          <th>${esc(cB.name)}<br><span style="font-weight:300;font-size:.72rem;text-transform:none">${cB.games} total</span></th>
-          <th>Weeks off</th>
-          <th>Notes</th>
-          <th>Date</th>
+          <th>Játékos</th>
+          <th>${esc(cA.name)}<br><span style="font-weight:300;font-size:.72rem;text-transform:none">${cA.games} összesen</span></th>
+          <th>${esc(cB.name)}<br><span style="font-weight:300;font-size:.72rem;text-transform:none">${cB.games} összesen</span></th>
+          <th>Kimaradó hetek</th>
+          <th>Megjegyzések</th>
+          <th>Dátum</th>
         </tr></thead>
         <tbody>${rowsHTML}</tbody>
         <tfoot><tr>
-          <td>Total demand</td>
-          <td><span class="chip">${totA}</span> <span class="cap">/ ${cA.games*4} avail</span></td>
-          <td><span class="chip">${totB}</span> <span class="cap">/ ${cB.games*4} avail</span></td>
+          <td>Összes igény</td>
+          <td><span class="chip">${totA}</span> <span class="cap">/ ${cA.games*4} elérh.</span></td>
+          <td><span class="chip">${totB}</span> <span class="cap">/ ${cB.games*4} elérh.</span></td>
           <td colspan="3"></td>
         </tr></tfoot>
       </table>
@@ -626,13 +625,13 @@ function renderResults(data) {
 async function exportCSV() {
   let data;
   try { data = await readBin(); }
-  catch (e) { alert('Could not fetch data: ' + e.message); return; }
+  catch (e) { alert('Nem sikerült lekérni az adatokat: ' + e.message); return; }
 
   const rows = Object.values(data).sort((a, b) => a.name.localeCompare(b.name));
-  if (!rows.length) { alert('No data to export yet.'); return; }
+  if (!rows.length) { alert('Még nincsenek exportálható adatok.'); return; }
 
   const cA = CONFIG.courts.A.name, cB = CONFIG.courts.B.name;
-  const header = ['Player', `${cA} Frequency`, `${cB} Frequency`, 'Weeks Off', `${cA} Games`, `${cB} Games`, 'Notes', 'Submitted'];
+  const header = ['Játékos', `${cA} Gyakoriság`, `${cB} Gyakoriság`, 'Kimaradó hetek', `${cA} alkalom`, `${cB} alkalom`, 'Megjegyzés', 'Beküldve'];
   const lines  = rows.map(r => [
     r.name,
     r.attendanceLabelA || '—',
@@ -659,12 +658,12 @@ async function sha256(str) {
 
 /* ── Clear all ────────────────────────────────────────────── */
 async function clearAll() {
-  const pw = prompt('Enter the coordinator password to clear all responses:');
+  const pw = prompt('Add meg a szervező jelszavát az összes válasz törléséhez:');
   if (pw === null) return;
-  if (await sha256(pw) !== CLEAR_HASH) { alert('Incorrect password.'); return; }
-  if (!confirm('Password accepted. Delete ALL responses? This cannot be undone.')) return;
+  if (await sha256(pw) !== CLEAR_HASH) { alert('Helytelen jelszó.'); return; }
+  if (!confirm('Jelszó elfogadva. Törölsz MINDEN választ? Ez nem visszavonható.')) return;
   try { await writeBin({}); renderResults({}); }
-  catch (e) { alert('Could not clear: ' + e.message); }
+  catch (e) { alert('Nem sikerült törölni: ' + e.message); }
 }
 
 /* ── Tab switching ────────────────────────────────────────── */
@@ -686,7 +685,7 @@ function updateBadge(n) {
 function saveSetup() {
   const id  = document.getElementById('setup-bin-id').value.trim();
   const key = document.getElementById('setup-api-key').value.trim();
-  if (!id || !key) { alert('Please enter both the Bin ID and the API key.'); return; }
+  if (!id || !key) { alert('Kérlek add meg a Bin azonosítót és az API kulcsot.'); return; }
   localStorage.setItem('tb_bin_id',  id);
   localStorage.setItem('tb_api_key', key);
   document.getElementById('setup-overlay').style.display = 'none';
@@ -698,7 +697,7 @@ function esc(s) {
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 function fmtDate(iso) {
-  try { return new Date(iso).toLocaleDateString('en-GB'); } catch { return '—'; }
+  try { return new Date(iso).toLocaleDateString('hu-HU'); } catch { return '—'; }
 }
 
 /* ── Initialise ───────────────────────────────────────────── */
@@ -706,15 +705,15 @@ function fmtDate(iso) {
   // Header text
   document.getElementById('hdr-eyebrow').textContent = '🎾 ' + CONFIG.seasonLabel;
   document.getElementById('hdr-sub').textContent =
-    `${CONFIG.courts.A.name} (${CONFIG.courts.A.games} games) · ${CONFIG.courts.B.name} (${CONFIG.courts.B.games} games)`;
+    `${CONFIG.courts.A.name} (${CONFIG.courts.A.games} alkalom) · ${CONFIG.courts.B.name} (${CONFIG.courts.B.games} alkalom)`;
 
   // Court labels
   document.getElementById('court-a-name').textContent = CONFIG.courts.A.name;
   document.getElementById('court-b-name').textContent = CONFIG.courts.B.name;
-  document.getElementById('court-a-meta').textContent = CONFIG.courts.A.games + ' games this season';
-  document.getElementById('court-b-meta').textContent = CONFIG.courts.B.games + ' games this season';
+  document.getElementById('court-a-meta').textContent = CONFIG.courts.A.games + ' alkalom ebben a szezonban';
+  document.getElementById('court-b-meta').textContent = CONFIG.courts.B.games + ' alkalom ebben a szezonban';
   document.getElementById('weeks-label').textContent  =
-    `weeks off out of ${CONFIG.totalSeasonWeeks}-week season`;
+    `kimaradó hét a ${CONFIG.totalSeasonWeeks} hetes szezonból`;
 
   // Player dropdown
   const sel = document.getElementById('f-name');
