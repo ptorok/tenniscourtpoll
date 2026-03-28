@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tennis Season Poll</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green-dark:  #1a3d0f;
+  --green-mid:   #255c16;
+  --green-light: #6abf40;
+  --green-pale:  #eaf5e2;
+  --amber:       #c17a2a;
+  --amber-pale:  #fdf3e6;
+  --sand:        #f0ede6;
+  --sand-light:  #f8f6f1;
+  --border:      #e0dbd0;
+  --text:        #1c1c1c;
+  --muted:       #888;
+  --white:       #ffffff;
+  --red:         #c04040;
+  --red-pale:    #fdf0f0;
+}
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: var(--sand);
+  min-height: 100vh;
+  color: var(--text);
+}
+
+.app { max-width: 700px; margin: 0 auto; padding-bottom: 5rem; }
+
+/* ── Header ── */
+.header {
+  background: var(--green-dark);
+  padding: 2.2rem 2rem 1.8rem;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(45deg,transparent,transparent 18px,rgba(255,255,255,.03) 18px,rgba(255,255,255,.03) 36px);
+}
+.header-inner { position: relative; z-index: 1; }
+.header-eyebrow {
+  font-size: .72rem; font-weight: 600; letter-spacing: .18em;
+  text-transform: uppercase; color: #8fbe6a; margin-bottom: .5rem;
+}
+.header h1 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: clamp(1.5rem, 5vw, 2.2rem);
+  color: #fff; line-height: 1.15;
+}
+.header-sub { margin-top: .5rem; color: #a8c890; font-size: .9rem; font-weight: 300; }
+
+/* ── Tabs ── */
+.tabs {
+  display: flex; background: var(--white);
+  border-bottom: 2px solid var(--border);
+  position: sticky; top: 0; z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+.tab-btn {
+  flex: 1; padding: 1rem; border: none; background: none;
+  font-family: inherit; font-size: .95rem; font-weight: 500;
+  color: var(--muted); cursor: pointer;
+  border-bottom: 3px solid transparent; margin-bottom: -2px;
+  transition: color .15s, border-color .15s;
+}
+.tab-btn.active { color: var(--green-dark); border-bottom-color: var(--green-light); }
+.badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--green-light); color: #fff;
+  border-radius: 20px; font-size: .72rem; font-weight: 700;
+  min-width: 1.4rem; height: 1.4rem; padding: 0 .4rem; margin-left: .4rem;
+}
+
+/* ── Body / Cards ── */
+.body { padding: 1.5rem 1.2rem; }
+.card {
+  background: var(--white); border-radius: 10px;
+  padding: 1.5rem; margin-bottom: 1.2rem;
+  border: 1px solid #e8e4dc;
+}
+.field-label { font-size: 1rem; font-weight: 600; color: var(--green-dark); margin-bottom: .25rem; }
+.field-hint  { font-size: .83rem; color: var(--muted); font-weight: 300; margin-bottom: .7rem; line-height: 1.4; }
+
+select, input[type="number"], textarea {
+  width: 100%; font-family: inherit; font-size: 1.05rem;
+  padding: .8rem 1rem; border: 2px solid var(--border);
+  border-radius: 8px; background: var(--sand-light);
+  color: var(--text); outline: none;
+  transition: border-color .2s;
+  -webkit-appearance: none; appearance: none;
+}
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='8'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%23888' fill='none' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem;
+}
+textarea { resize: vertical; min-height: 72px; }
+select:focus, input:focus, textarea:focus { border-color: var(--green-dark); }
+select:disabled, input:disabled, textarea:disabled { opacity: .55; cursor: not-allowed; }
+
+/* ── Court grid ── */
+.court-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.court-card {
+  border: 2px solid var(--border); border-radius: 8px;
+  padding: 1rem; background: var(--sand-light);
+}
+.court-card h3 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 1rem; color: var(--amber); margin-bottom: .15rem;
+}
+.court-meta { font-size: .78rem; color: var(--muted); margin-bottom: .7rem; }
+.court-preview {
+  margin-top: .6rem; font-size: .95rem; font-weight: 600;
+  color: var(--green-dark); min-height: 1.3em;
+}
+.court-preview small { font-size: .78rem; font-weight: 400; color: var(--muted); }
+
+/* ── Weeks row ── */
+.weeks-row { display: flex; align-items: center; gap: 1rem; }
+.weeks-row input { max-width: 100px; }
+.weeks-note { font-size: .85rem; color: var(--muted); font-weight: 300; }
+
+/* ── Submit ── */
+.submit-btn {
+  width: 100%; padding: 1.1rem;
+  background: var(--green-dark); color: #fff; border: none;
+  border-radius: 8px; font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 1.15rem; cursor: pointer; letter-spacing: .02em;
+  transition: background .2s, opacity .2s;
+}
+.submit-btn:hover:not(:disabled) { background: var(--green-mid); }
+.submit-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.notice {
+  margin-top: 1rem; border-radius: 8px;
+  padding: 1.1rem 1.3rem; font-size: .93rem; line-height: 1.6;
+}
+.notice.success { background: var(--green-pale); border: 2px solid var(--green-light); color: var(--green-dark); }
+.notice.error   { background: var(--red-pale);  border: 2px solid var(--red);         color: var(--red); }
+.notice strong  { display: block; font-size: 1.1rem; margin-bottom: .3rem; }
+
+/* ── Results ── */
+.results-header {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: 1rem;
+  flex-wrap: wrap; gap: .6rem;
+}
+.results-header h2 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 1.3rem; color: var(--green-dark);
+}
+.btn-row { display: flex; gap: .6rem; flex-wrap: wrap; }
+.icon-btn {
+  padding: .45rem .9rem; border-radius: 6px;
+  font-family: inherit; font-size: .85rem; font-weight: 500;
+  cursor: pointer; border: 2px solid; background: none;
+  transition: background .15s;
+}
+.btn-export { border-color: var(--amber); color: var(--amber); }
+.btn-export:hover { background: var(--amber-pale); }
+.btn-clear  { border-color: var(--red); color: var(--red); }
+.btn-clear:hover  { background: var(--red-pale); }
+
+.table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; min-width: 500px; }
+thead th {
+  background: var(--green-dark); color: #fff;
+  padding: .75rem .9rem; text-align: left;
+  font-size: .78rem; letter-spacing: .05em; text-transform: uppercase;
+}
+thead th:not(:first-child) { text-align: center; }
+tbody tr:nth-child(even) td { background: var(--sand-light); }
+tbody tr:hover td { background: #eef5e8; }
+td { padding: .7rem .9rem; border-bottom: 1px solid #e8e4dc; vertical-align: top; }
+td:not(:first-child):not(.notes-cell) { text-align: center; }
+td.notes-cell { font-size: .8rem; color: var(--muted); }
+.chip {
+  display: inline-block; background: var(--green-pale);
+  color: #1a5c0a; border-radius: 20px;
+  padding: .15rem .65rem; font-weight: 600; font-size: .85rem;
+}
+tfoot td {
+  background: var(--green-dark) !important; color: #fff;
+  font-weight: 600; border-bottom: none; padding: .8rem .9rem;
+}
+tfoot .chip { background: var(--green-light); color: #fff; }
+tfoot .cap  { font-size: .75rem; opacity: .65; font-weight: 400; }
+
+.state-msg { text-align: center; color: var(--muted); padding: 2.5rem 1rem; font-style: italic; }
+
+/* ── Setup overlay ── */
+#setup-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.65);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100; padding: 1rem;
+}
+.setup-box {
+  background: var(--white); border-radius: 14px;
+  padding: 2rem; max-width: 500px; width: 100%;
+  box-shadow: 0 12px 50px rgba(0,0,0,.3);
+}
+.setup-box h2 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  color: var(--green-dark); font-size: 1.5rem; margin-bottom: .5rem;
+}
+.setup-box .setup-intro { font-size: .9rem; color: var(--muted); margin-bottom: 1.4rem; line-height: 1.6; }
+.setup-box .setup-intro a { color: var(--amber); }
+.setup-box .setup-intro code {
+  background: var(--sand-light); padding: .1rem .4rem;
+  border-radius: 4px; font-size: .85rem; border: 1px solid var(--border);
+}
+.setup-field-label {
+  display: block; font-weight: 600; font-size: .9rem;
+  color: var(--green-dark); margin-bottom: .3rem;
+}
+.setup-field-hint { font-size: .78rem; color: var(--muted); margin-bottom: .5rem; }
+.setup-box input[type="text"] {
+  width: 100%; font-family: 'Courier New', monospace; font-size: .9rem;
+  padding: .75rem .9rem; border: 2px solid var(--border);
+  border-radius: 8px; background: var(--sand-light);
+  margin-bottom: 1.1rem; outline: none; color: var(--text);
+  -webkit-appearance: none; appearance: none;
+}
+.setup-box input[type="text"]:focus { border-color: var(--green-dark); }
+.setup-save-btn {
+  width: 100%; padding: .95rem;
+  background: var(--green-dark); color: #fff; border: none;
+  border-radius: 8px; font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 1.05rem; cursor: pointer; letter-spacing: .02em;
+}
+.setup-save-btn:hover { background: var(--green-mid); }
+.setup-footer {
+  margin-top: 1rem; font-size: .78rem; color: var(--muted); line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+  .court-grid { grid-template-columns: 1fr; }
+  .body { padding: 1rem .8rem; }
+  .card { padding: 1.2rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     COORDINATOR CONFIG
+     Edit these values, then host the file anywhere (Netlify, GitHub
+     Pages, your own server, etc.).  Players just need the URL.
+     ═══════════════════════════════════════════════════════════════════ -->
+<script>
+const CONFIG = {
+
+  /* Season info */
+  seasonLabel:      "Summer 2026 Outdoor Season",
+  totalSeasonWeeks: 25,   // total weeks the season spans
+
+  /* Courts — rename freely */
+  courts: {
+    A: { name: "Vadaskerti kedd 19:00-21:00", games: 25 },
+    B: { name: "Pokorny csütörtök 19:00-21:00", games: 20 },
+  },
+
+  /* Player roster */
+  players: [
+    "Fülöp	Marci", "Fülöp	Zoltán", "Gajdacsi	Laci", "Galla	Gábor", "Geszti	András", "Miklós	Gábor", "Polgár	Tamás", "Sugár	Tamás", "Szatmári	Tamás", "Szekrényesy	Kati", "Török	Péter",
+  ],
+
+  /* ── JSONBin.io backend ─────────────────────────────────────────
+   *
+   *  HOW TO SET UP (takes ~3 minutes):
+   *
+   *  1. Go to https://jsonbin.io and sign up for a free account.
+   *  2. Click "CREATE BIN", paste in just:  {}  and save.
+   *  3. Copy the Bin ID shown in the URL or bin panel.
+   *  4. Go to API Keys → copy your Master Key.
+   *  5. Paste both below, then set  configured: true
+   *
+   *  Alternatively, leave configured: false and the app will show
+   *  a one-time setup prompt in the browser (handy for testing).
+   * ─────────────────────────────────────────────────────────────── */
+  jsonbinId:  "69c7b8cc5fdde5745509d202",    // e.g. "6643f1e1acd3cb34a836f123"
+  jsonbinKey: "$2a$10$l6YrOyVqKrDgBNIW69nQSeJdeRO1cuTnSNNI6uLVpB5LS3JChlYY.",   // e.g. "$2a$10$Abc123..."
+  configured: true,                 // set to true after filling in above
+
+};
+</script>
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+
+<!-- Setup overlay -->
+<div id="setup-overlay" style="display:none">
+  <div class="setup-box">
+    <h2>Backend setup</h2>
+    <p class="setup-intro">
+      This poll stores responses in a free
+      <a href="https://jsonbin.io" target="_blank">JSONBin.io</a> bin so all
+      players write to the same place.<br><br>
+      Sign up at jsonbin.io → create a new bin containing just <code>{}</code>
+      → paste your Bin ID and Master Key below.
+    </p>
+    <label class="setup-field-label">Bin ID</label>
+    <p class="setup-field-hint">From the bin URL or the bin info panel</p>
+    <input type="text" id="setup-bin-id" placeholder="6643f1e1acd3cb34a836f123" autocomplete="off">
+    <label class="setup-field-label">Master API Key</label>
+    <p class="setup-field-hint">From Account → API Keys</p>
+    <input type="text" id="setup-api-key" placeholder="$2a$10$..." autocomplete="off">
+    <button class="setup-save-btn" onclick="saveSetup()">Save &amp; open poll</button>
+    <p class="setup-footer">
+      These credentials are saved only in <em>your</em> browser's localStorage —
+      never transmitted anywhere except directly to JSONBin.
+      To hard-code them instead, edit the CONFIG block at the top of this HTML file.
+    </p>
+  </div>
+</div>
+
+
+<!-- App shell -->
+<div class="app">
+
+  <div class="header">
+    <div class="header-inner">
+      <div class="header-eyebrow" id="hdr-eyebrow">🎾</div>
+      <h1>Game Preference Poll</h1>
+      <p class="header-sub" id="hdr-sub"></p>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-form-btn"    onclick="showTab('form')">My Preferences</button>
+    <button class="tab-btn"        id="tab-results-btn" onclick="showTab('results')">
+      Results <span class="badge" id="resp-badge" style="display:none">0</span>
+    </button>
+  </div>
+
+  <div class="body">
+
+    <!-- FORM TAB -->
+    <div id="tab-form">
+
+      <div class="card">
+        <div class="field-label">Your name</div>
+        <div class="field-hint">Select your name from the list</div>
+        <select id="f-name">
+          <option value="">— choose your name —</option>
+        </select>
+      </div>
+
+      <div class="card">
+        <div class="field-label">How often do you expect to play?</div>
+        <div class="field-hint">Your typical attendance during weeks when you are available</div>
+        <select id="f-attendance" onchange="recalc()">
+          <option value="">— choose —</option>
+          <option value="1.00">Every week (nearly always available)</option>
+          <option value="0.75">Most weeks — about 3 in 4</option>
+          <option value="0.50">Every other week</option>
+          <option value="0.33">About 1 in 3 weeks</option>
+          <option value="0.25">Occasional — about 1 in 4</option>
+        </select>
+      </div>
+
+      <div class="card">
+        <div class="field-label">Weeks away or unavailable</div>
+        <div class="field-hint">
+          How many whole weeks will you definitely not be able to play?
+          (holidays, travel, injury…) Your game totals will be reduced accordingly.
+        </div>
+        <div class="weeks-row">
+          <input type="number" id="f-weeks-off" value="0" min="0" max="52" oninput="recalc()">
+          <span class="weeks-note" id="weeks-label">weeks off</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="field-label">Court preference</div>
+        <div class="field-hint">
+          How do you want to split your games between the two courts?
+          Choosing a preference for one will auto-suggest the other.
+        </div>
+        <div class="court-grid">
+          <div class="court-card">
+            <h3 id="court-a-name">Court A</h3>
+            <div class="court-meta" id="court-a-meta"></div>
+            <select id="f-split-a" onchange="mirrorSplit('a')">
+              <option value="">— preference —</option>
+              <option value="1.00">All or nearly all</option>
+              <option value="0.75">Mostly here (~75%)</option>
+              <option value="0.50">About half and half</option>
+              <option value="0.25">Less often (~25%)</option>
+              <option value="0.00">Rarely / never</option>
+            </select>
+            <div class="court-preview" id="preview-a"></div>
+          </div>
+          <div class="court-card">
+            <h3 id="court-b-name">Court B</h3>
+            <div class="court-meta" id="court-b-meta"></div>
+            <select id="f-split-b" onchange="mirrorSplit('b')">
+              <option value="">— preference —</option>
+              <option value="1.00">All or nearly all</option>
+              <option value="0.75">Mostly here (~75%)</option>
+              <option value="0.50">About half and half</option>
+              <option value="0.25">Less often (~25%)</option>
+              <option value="0.00">Rarely / never</option>
+            </select>
+            <div class="court-preview" id="preview-b"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="field-label">Additional notes</div>
+        <div class="field-hint">Optional — e.g. "prefer not to play Mondays", "flexible on location"</div>
+        <textarea id="f-notes" placeholder="Leave blank if nothing to add…"></textarea>
+      </div>
+
+      <button class="submit-btn" id="submit-btn" onclick="handleSubmit()">Submit my preferences</button>
+      <div id="form-notice" style="display:none" class="notice"></div>
+
+    </div>
+
+    <!-- RESULTS TAB -->
+    <div id="tab-results" style="display:none">
+      <div class="results-header">
+        <h2>All Responses</h2>
+        <div class="btn-row">
+          <button class="icon-btn btn-export" onclick="exportCSV()">⬇ Export CSV</button>
+          <button class="icon-btn btn-clear"  onclick="clearAll()">✕ Clear all</button>
+        </div>
+      </div>
+      <div id="results-body"><p class="state-msg">Loading…</p></div>
+    </div>
+
+  </div>
+</div>
+
+
+<script>
+/* ── Constants ────────────────────────────────────────────── */
+const ATTENDANCE_LABELS = {
+  "1.00": "Every week",
+  "0.75": "Most weeks — about 3 in 4",
+  "0.50": "Every other week",
+  "0.33": "About 1 in 3 weeks",
+  "0.25": "Occasional — about 1 in 4",
+};
+const MIRROR = {
+  "1.00": "0.00",
+  "0.75": "0.25",
+  "0.50": "0.50",
+  "0.25": "0.75",
+  "0.00": "1.00",
+};
+
+/* ── Calculation ──────────────────────────────────────────── */
+function calcGames(courtGames, totalWeeks, weeksOff, rate, split) {
+  const avail = Math.max(0, totalWeeks - weeksOff);
+  return Math.round(avail * rate * split * (courtGames / totalWeeks));
+}
+
+function recalc() {
+  const rate     = parseFloat(document.getElementById('f-attendance').value) || null;
+  const weeksOff = parseInt(document.getElementById('f-weeks-off').value)  || 0;
+  const splitA   = parseFloat(document.getElementById('f-split-a').value);
+  const splitB   = parseFloat(document.getElementById('f-split-b').value);
+  const W        = CONFIG.totalSeasonWeeks;
+
+  document.getElementById('weeks-label').textContent =
+    `week${weeksOff === 1 ? '' : 's'} off out of ${W}-week season`;
+
+  const pA = document.getElementById('preview-a');
+  const pB = document.getElementById('preview-b');
+
+  if (rate && !isNaN(splitA)) {
+    pA.innerHTML = `≈ ${calcGames(CONFIG.courts.A.games, W, weeksOff, rate, splitA)} games <small>for you</small>`;
+  } else { pA.innerHTML = ''; }
+
+  if (rate && !isNaN(splitB)) {
+    pB.innerHTML = `≈ ${calcGames(CONFIG.courts.B.games, W, weeksOff, rate, splitB)} games <small>for you</small>`;
+  } else { pB.innerHTML = ''; }
+}
+
+function mirrorSplit(changed) {
+  const src = document.getElementById('f-split-' + changed);
+  const dst = document.getElementById('f-split-' + (changed === 'a' ? 'b' : 'a'));
+  if (src.value && MIRROR[src.value] !== undefined) dst.value = MIRROR[src.value];
+  recalc();
+}
+
+/* ── JSONBin backend ──────────────────────────────────────── */
+function getBinCfg() {
+  const id  = (CONFIG.jsonbinId  !== 'YOUR_BIN_ID_HERE'  && CONFIG.jsonbinId)
+              ? CONFIG.jsonbinId  : localStorage.getItem('tb_bin_id');
+  const key = (CONFIG.jsonbinKey !== 'YOUR_API_KEY_HERE' && CONFIG.jsonbinKey)
+              ? CONFIG.jsonbinKey : localStorage.getItem('tb_api_key');
+  return { id, key };
+}
+
+async function readBin() {
+  const { id, key } = getBinCfg();
+  const res = await fetch(`https://api.jsonbin.io/v3/b/${id}/latest`, {
+    headers: { 'X-Access-Key': key, 'X-Bin-Meta': 'false' }
+  });
+  if (!res.ok) throw new Error(`Read failed (HTTP ${res.status})`);
+  return await res.json();
+}
+
+async function writeBin(data) {
+  const { id, key } = getBinCfg();
+  const res = await fetch(`https://api.jsonbin.io/v3/b/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'X-Access-Key': key },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error(`Write failed (HTTP ${res.status})`);
+}
+
+/* ── Form submit ──────────────────────────────────────────── */
+async function handleSubmit() {
+  const name       = document.getElementById('f-name').value;
+  const attendance = document.getElementById('f-attendance').value;
+  const splitA     = document.getElementById('f-split-a').value;
+  const splitB     = document.getElementById('f-split-b').value;
+  const weeksOff   = parseInt(document.getElementById('f-weeks-off').value) || 0;
+  const notes      = document.getElementById('f-notes').value.trim();
+  const W          = CONFIG.totalSeasonWeeks;
+
+  if (!name)              { alert('Please select your name.');               return; }
+  if (!attendance)        { alert('Please choose how often you will play.'); return; }
+  if (!splitA || !splitB) { alert('Please set a preference for both courts.'); return; }
+
+  const rate = parseFloat(attendance);
+  const gA = calcGames(CONFIG.courts.A.games, W, weeksOff, rate, parseFloat(splitA));
+  const gB = calcGames(CONFIG.courts.B.games, W, weeksOff, rate, parseFloat(splitB));
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+  setNotice('', '');
+
+  try {
+    const current = await readBin();
+    current[name] = {
+      name,
+      attendanceLabel: ATTENDANCE_LABELS[attendance] || attendance,
+      weeksOff,
+      gamesA: gA,
+      gamesB: gB,
+      notes,
+      submittedAt: new Date().toISOString(),
+    };
+    await writeBin(current);
+
+    ['f-name','f-attendance','f-weeks-off','f-split-a','f-split-b','f-notes'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.disabled = true;
+    });
+    btn.style.display = 'none';
+
+    setNotice('success',
+      `<strong>Thank you ✓</strong>
+       Your preferences have been saved — you can close this page.<br><br>
+       Your estimates: <strong>${gA}</strong> games at ${esc(CONFIG.courts.A.name)}
+       &nbsp;·&nbsp; <strong>${gB}</strong> games at ${esc(CONFIG.courts.B.name)}`
+    );
+    updateBadge(Object.keys(current).length);
+
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = 'Submit my preferences';
+    setNotice('error', `<strong>Could not save</strong> — ${esc(e.message)}. Please try again or contact the coordinator.`);
+  }
+}
+
+function setNotice(type, html) {
+  const el = document.getElementById('form-notice');
+  el.className = 'notice ' + type;
+  el.innerHTML = html;
+  el.style.display = html ? 'block' : 'none';
+}
+
+/* ── Results tab ──────────────────────────────────────────── */
+async function loadResults() {
+  const body = document.getElementById('results-body');
+  body.innerHTML = '<p class="state-msg">Loading…</p>';
+  try {
+    renderResults(await readBin());
+  } catch (e) {
+    body.innerHTML = `<p class="state-msg" style="color:var(--red)">Could not load results: ${esc(e.message)}</p>`;
+  }
+}
+
+function renderResults(data) {
+  const rows = Object.values(data).sort((a, b) => a.name.localeCompare(b.name));
+  const body = document.getElementById('results-body');
+  updateBadge(rows.length);
+
+  if (!rows.length) {
+    body.innerHTML = '<p class="state-msg">No responses yet.</p>';
+    return;
+  }
+
+  const cA   = CONFIG.courts.A;
+  const cB   = CONFIG.courts.B;
+  const totA = rows.reduce((s, r) => s + (r.gamesA || 0), 0);
+  const totB = rows.reduce((s, r) => s + (r.gamesB || 0), 0);
+
+  const rowsHTML = rows.map(r => `
+    <tr>
+      <td><strong>${esc(r.name)}</strong></td>
+      <td><span class="chip">${r.gamesA}</span></td>
+      <td><span class="chip">${r.gamesB}</span></td>
+      <td style="color:var(--muted)">${r.weeksOff}</td>
+      <td class="notes-cell">${esc(r.notes || '—')}</td>
+      <td style="color:var(--muted);font-size:.78rem">${fmtDate(r.submittedAt)}</td>
+    </tr>`).join('');
+
+  body.innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Player</th>
+          <th>${esc(cA.name)}<br><span style="font-weight:300;font-size:.72rem;text-transform:none">${cA.games} total</span></th>
+          <th>${esc(cB.name)}<br><span style="font-weight:300;font-size:.72rem;text-transform:none">${cB.games} total</span></th>
+          <th>Weeks off</th>
+          <th>Notes</th>
+          <th>Date</th>
+        </tr></thead>
+        <tbody>${rowsHTML}</tbody>
+        <tfoot><tr>
+          <td>Total demand</td>
+          <td><span class="chip">${totA}</span> <span class="cap">/ ${cA.games*4} avail</span></td>
+          <td><span class="chip">${totB}</span> <span class="cap">/ ${cB.games*4} avail</span></td>
+          <td colspan="3"></td>
+        </tr></tfoot>
+      </table>
+    </div>`;
+}
+
+/* ── Export CSV ───────────────────────────────────────────── */
+async function exportCSV() {
+  let data;
+  try { data = await readBin(); }
+  catch (e) { alert('Could not fetch data: ' + e.message); return; }
+
+  const rows = Object.values(data).sort((a, b) => a.name.localeCompare(b.name));
+  if (!rows.length) { alert('No data to export yet.'); return; }
+
+  const cA = CONFIG.courts.A.name, cB = CONFIG.courts.B.name;
+  const header = ['Player', 'Attendance', 'Weeks Off', `${cA} Games`, `${cB} Games`, 'Notes', 'Submitted'];
+  const lines  = rows.map(r => [
+    r.name,
+    r.attendanceLabel,
+    r.weeksOff,
+    r.gamesA,
+    r.gamesB,
+    `"${(r.notes || '').replace(/"/g, '""')}"`,
+    fmtDate(r.submittedAt),
+  ]);
+  const csv = [header, ...lines].map(l => l.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'tennis_poll_results.csv';
+  a.click();
+}
+
+/* ── Clear all ────────────────────────────────────────────── */
+async function clearAll() {
+  if (!confirm('Delete ALL responses from the server? This cannot be undone.')) return;
+  try { await writeBin({}); renderResults({}); }
+  catch (e) { alert('Could not clear: ' + e.message); }
+}
+
+/* ── Tab switching ────────────────────────────────────────── */
+function showTab(tab) {
+  document.getElementById('tab-form').style.display    = tab === 'form'    ? '' : 'none';
+  document.getElementById('tab-results').style.display = tab === 'results' ? '' : 'none';
+  document.getElementById('tab-form-btn').classList.toggle('active',    tab === 'form');
+  document.getElementById('tab-results-btn').classList.toggle('active', tab === 'results');
+  if (tab === 'results') loadResults();
+}
+
+function updateBadge(n) {
+  const b = document.getElementById('resp-badge');
+  b.textContent = n;
+  b.style.display = n > 0 ? '' : 'none';
+}
+
+/* ── Setup overlay ────────────────────────────────────────── */
+function saveSetup() {
+  const id  = document.getElementById('setup-bin-id').value.trim();
+  const key = document.getElementById('setup-api-key').value.trim();
+  if (!id || !key) { alert('Please enter both the Bin ID and the API key.'); return; }
+  localStorage.setItem('tb_bin_id',  id);
+  localStorage.setItem('tb_api_key', key);
+  document.getElementById('setup-overlay').style.display = 'none';
+}
+
+/* ── Utilities ────────────────────────────────────────────── */
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function fmtDate(iso) {
+  try { return new Date(iso).toLocaleDateString('en-GB'); } catch { return '—'; }
+}
+
+/* ── Initialise ───────────────────────────────────────────── */
+(function init() {
+  // Header text
+  document.getElementById('hdr-eyebrow').textContent = '🎾 ' + CONFIG.seasonLabel;
+  document.getElementById('hdr-sub').textContent =
+    `${CONFIG.courts.A.name} (${CONFIG.courts.A.games} games) · ${CONFIG.courts.B.name} (${CONFIG.courts.B.games} games)`;
+
+  // Court labels
+  document.getElementById('court-a-name').textContent = CONFIG.courts.A.name;
+  document.getElementById('court-b-name').textContent = CONFIG.courts.B.name;
+  document.getElementById('court-a-meta').textContent = CONFIG.courts.A.games + ' games this season';
+  document.getElementById('court-b-meta').textContent = CONFIG.courts.B.games + ' games this season';
+  document.getElementById('weeks-label').textContent  =
+    `weeks off out of ${CONFIG.totalSeasonWeeks}-week season`;
+
+  // Player dropdown
+  const sel = document.getElementById('f-name');
+  [...CONFIG.players].sort().forEach(p => {
+    const o = document.createElement('option');
+    o.value = p; o.textContent = p;
+    sel.appendChild(o);
+  });
+
+  // Show setup overlay if credentials are missing
+  const { id, key } = getBinCfg();
+  if (!id || !key) {
+    document.getElementById('setup-overlay').style.display = 'flex';
+  }
+})();
+</script>
+</body>
+</html>
