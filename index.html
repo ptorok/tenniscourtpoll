@@ -650,9 +650,19 @@ async function exportCSV() {
   a.click();
 }
 
+const CLEAR_HASH = 'cd8fea4f57f8b69d484d6ec92aa2b17d6cf0228c6bf0d5f3dbffbe14ef08cd30';
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 /* ── Clear all ────────────────────────────────────────────── */
 async function clearAll() {
-  if (!confirm('Delete ALL responses from the server? This cannot be undone.')) return;
+  const pw = prompt('Enter the coordinator password to clear all responses:');
+  if (pw === null) return;
+  if (await sha256(pw) !== CLEAR_HASH) { alert('Incorrect password.'); return; }
+  if (!confirm('Password accepted. Delete ALL responses? This cannot be undone.')) return;
   try { await writeBin({}); renderResults({}); }
   catch (e) { alert('Could not clear: ' + e.message); }
 }
